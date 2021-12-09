@@ -1,6 +1,5 @@
 # key = item 이름, value = 수량 
-inventory = {}
-
+import pickle
 # Todolist 1
 # 1. 아이템 추가시 수량도 받기
 # 2. inventory 전역함수인데, 인자로 받아서 처리
@@ -47,7 +46,7 @@ def print_Itemmenu():
 
 # Todolist 2
 # while문을 아이템 다루기 함수로 구현
-def use_item():
+def use_item(inventory):
 
     while True:
         print_Itemmenu()
@@ -77,7 +76,28 @@ def use_item():
 
 # Todolist 3
 # 캐릭터 만들기
-character = {}
+# try 사용해 보기
+'''
+try:
+    load_file = open("game_save.p","rb")
+    character = pickle.load(load_file)
+    load_file.close()
+    print("저장된 파일을 읽어왔습니다.")
+except:
+    print("읽어올 파일이 없습니다.")
+    character = {}
+'''
+import os
+
+if os.path.isfile("game_save.p"):
+    load_file = open("game_save.p","rb")
+    character = pickle.load(load_file)
+    load_file.close()
+    print("저장된 파일을 읽어왔습니다.")
+else:
+    print("읽어올 파일이 없습니다.")
+    character = {}
+
 select_character = None
 def new_character(name, t_character):
     if name in t_character:
@@ -92,7 +112,7 @@ def check_character(name, t_character):
     return name in t_character
 
 def print_characterMenu():
-    print("0. 끝내기")
+    print("0. 저장하고 끝내기")
     print("1. 캐릭터 추가")
     print("2. 캐릭터 이름출력")
     print("3. 캐릭터 선택")
@@ -103,7 +123,11 @@ while True:
     print_characterMenu()
     option = int(input("메뉴 번호를 입력하세요)"))
     if option == 0:
-        print("종료합니다.")
+        save_file = open("game_save.p","wb")
+        pickle.dump(character, save_file)
+        save_file.close()
+        print("내용이 저장되었습니다.")
+        print("종료되었습니다..")
         break
     elif option == 1:
         name = input("캐릭터 이름을 입력하세요.)")
@@ -122,7 +146,14 @@ while True:
             print(select_character+"이(가) 선택되었습니다.")
         else:
             print(temp_name+"은 존재하지 않는 캐릭터입니다.")
-         
+    elif option == 4:
+        if select_character == None:
+            print("3번 메뉴로 캐릭터를 선택해주세요.")
+        else :
+            print("선택된 캐릭터는 "+select_character+" 입니다.")
+            inventory = character[select_character]
+            use_item(inventory)
+
                 
 # 캐릭터 이름으로 식별
 # 캐릭터 인벤토리
